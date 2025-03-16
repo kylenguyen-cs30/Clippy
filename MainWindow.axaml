@@ -1,9 +1,45 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="ClippySync.MainWindow"
-        Title="ClippySync">
-    Welcome to Avalonia!
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="ClippySync.MainWindow" Title="ClippySync">
+  <Grid RowDefinition="Auto,*,*" Margin="10">
+    <!-- Title -->
+    <TextBlock Grid.Row="0" FontSize="20" FontWeight="Bold" Margin="0,0,0,10">Clippy - Cross-Platform Clipboard Synchronization</TextBlock>
+    <!-- Device List -->
+    <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,10" Padding="5">
+      <Grid RowDefinitions="Auto,*">
+        <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5">Connected Devices:</TextBlock>
+        <ListBox Grid.Row="1" Name="DevicesList">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid ColumnDefinitions="Auto,*">
+                <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Bold" Margin="0,0,10,0" />
+                <TextBlock Grid.Column="1" Text="{Binding IpAddress}" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+    </Border>
+    <!-- Clipboard History -->
+    <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="5">
+      <Grid RowDefinitions="Auto,*">
+        <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5">Clipboard History:</TextBlock>
+        <ListBox Grid.Row="1" Name="ClipboardList">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Row="0" Text="{Binding Content}" TextWrapping="Wrap" />
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,0">
+                  <TextBlock Text="From: " FontStyle="Italic" />
+                  <TextBlock Text="{Binding ComputerName}" FontStyle="Italic" Margin="0,0,5,0" />
+                  <TextBlock Text="(" FontStyle="Italic" />
+                  <TextBlock Text="{Binding IpAddress}" FontStyle="Italic" />
+                  <TextBlock Text=")" FontStyle="Italic" />
+                </StackPanel>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+    </Border>
+  </Grid>
 </Window>
+
