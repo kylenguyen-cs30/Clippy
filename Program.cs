@@ -109,8 +109,9 @@ namespace Clippy.Console
 
                         // broadcase to network 
                         byte[] data = Encoding.UTF8.GetBytes(currentText);
-                        await _boardcaster.SendAsync(data, data.Length,
-                            new IPEndPoint(IPAddress.Broadcast, 5555));
+                        // await _boardcaster.SendAsync(data, data.Length,
+                        //     new IPEndPoint(IPAddress.Broadcast, 5555));
+                        await BroadcastClipboardData(currentText);
                     }
 
                     // wait a bit before checking again 
