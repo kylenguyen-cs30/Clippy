@@ -152,14 +152,7 @@ namespace Clippy.Console
                     var messageData = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
 
 
-                    // verify app identifier 
-                    // if the first token in the messageData is not same with APP_IDENTIFIER
-                    // if (messageData["app"] != APP_IDENTIFIER)
-                    // {
-                    //     // not our app, ignore 
-                    //     continue;
-                    // }
-                    //
+                    
 
                     if (!messageData.ContainsKey("app") || messageData["app"] != APP_IDENTIFIER)
                     {
