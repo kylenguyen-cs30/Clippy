@@ -5,9 +5,20 @@
     <!-- Device List -->
     <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,10" Padding="5">
       <Grid RowDefinitions="Auto,*">
-        <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5">Connected Devices:</TextBlock>
-        <ListBox Grid.Row="1" Name="DevicesList">
-          <ListBoxItem>No connected devices</ListBoxItem>
+        <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5">Connected Device</TextBlock>
+        <ListBox Grid.Row="1" Name="DeviceList" Items="{Binding Devices}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Name}" FontWeight="Bold"></TextBlock>
+                <TextBlock Text=" ("></TextBlock>
+                <TextBlock Text="{Binding DeviceType}"></TextBlock>
+                <TextBlock Text=" - "></TextBlock>
+                <TextBlock Text="{Binding IpAddress}"></TextBlock>
+                <TextBlock Text=")"></TextBlock>
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
         </ListBox>
       </Grid>
     </Border>
@@ -15,8 +26,21 @@
     <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="5">
       <Grid RowDefinitions="Auto,*">
         <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5">Clipboard History:</TextBlock>
-        <ListBox Grid.Row="1" Name="ClipboardList">
-          <ListBoxItem>No clipboard history yet</ListBoxItem>
+        <ListBox Grid.Row="1" Name="ClipboardList" Items="{Binding ClipboardItems}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Row="0" Text="{Binding Content}" TextWrapping="Wrap"></TextBlock>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,0">
+                  <TextBlock Text="From: " FontStyle="Italic"></TextBlock>
+                  <TextBlock Text="{Binding ComputerName}" FontStyle="Italic" Margin="0,0,5,0"></TextBlock>
+                  <TextBlock Text="(" FontStyle="Italic"></TextBlock>
+                  <TextBlock Text="{Binding IpAddress}" FontStyle="Italic"></TextBlock>
+                  <TextBlock Text=")" FontStyle="Italic"></TextBlock>
+                </StackPanel>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
         </ListBox>
       </Grid>
     </Border>

@@ -16,7 +16,7 @@ namespace Clippy.Console.Services
         public void Start()
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            Task.Run(() => MonitorClipboardAsync(() => MonitorClipboardAsync(_cancellationTokenSource.Token));
+            Task.Run(() => MonitorClipboardAsync(() => MonitorClipboardAsync(_cancellationTokenSource.Token)));
         }
 
 
@@ -46,7 +46,7 @@ namespace Clippy.Console.Services
                 }
             }
         }
-        public async Task SetClipboardContent(string content)
+        public async Task SetClipboardContentAsync(string content)
         {
             if (content != _lastClipboardContent)
             {

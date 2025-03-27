@@ -73,11 +73,39 @@ namespace Clippy.Console.Services
                 try
                 {
                     UdpReceiveResult result = await _receiver.ReceiveAsync();
+                    if (result.Buffer.Length <= MAGIC_BYTES.Length || !result.Buffer.Take(MAGIC_BYTES.Length).SequenceEqual(MAGIC_BYTES))
+                    {
+                        continue;
+                    }
+
+                    byte[] jsonBytes = result.Buffer.Skip(MAGIC_BYTES.Length).ToArray();
+                    string jsonData = Encoding.UTF8.GetString(jsonBytes);
+                    var messageData = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
+
+                    if (!messageData.ContainsKey("app") || messageData["app"] != APP_IDENTIFIER)
+                    {
+                        continue;
+                    }
+
+                    string senderIp = result.RemoteEndpoint.Address.ToString();
+                    string deviceName = messageData["deviceName"];
+                    string deviceType = messageData["deviceType"];
+                    string content = messageData["content"];
+
+                    // notify about new device 
+                    var device = new Device(deviceName, senderIp, deviceType);
+                    DeviceDiscovered?.Invoke(this, device);
+
+                    // Notify about new clipboard content 
+                    var clipboardItem = new ClipboardItem(content, deviceName, senderIp, deviceType);
+                    ClipboardDataReceived?.Invoke(this, clipboardItem);
+
+
                 }
-                catch (System.Exception)
+                catch (Exception ex)
                 {
 
-                    throw;
+                    System.Console.WriteLine($"Error receieving clipboard adata: {ex.Message}");
                 }
             }
         }
