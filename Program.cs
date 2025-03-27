@@ -1,6 +1,7 @@
 ﻿// Name : Hoang Nguyen
 // Project: Clippy
 //
+using Avalonia;
 
 using System;
 using System.Net;
@@ -24,9 +25,16 @@ namespace Clippy.Console
         private static readonly byte[] MAGIC_BYTES = Encoding.UTF8.GetBytes("CLIPPY");
 
 
+        // this method is needed for IDE previewer infrastucture
+        public static AppBuilder BuildAvaloniaApp()
+          => AppBuilder.Configure<App>().UsePlatformDetect().LogToTrace();
+
+
         // main method
         static async Task Main(string[] args)
         {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
             System.Console.WriteLine("Clippy Started - press Ctrl+C to exit");
 
             // set up _receiver endpoint 
@@ -152,7 +160,7 @@ namespace Clippy.Console
                     var messageData = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
 
 
-                    
+
 
                     if (!messageData.ContainsKey("app") || messageData["app"] != APP_IDENTIFIER)
                     {

@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" x:Class="Clippy.Console.MainWindow" Title="ClippySync">
+  <Grid RowDefinitions="Auto,*,*" Margin="10">
+    <!-- Title -->
+    <TextBlock Grid.Row="0" FontSize="20" FontWeight="Bold" Margin="0,0,0,10">Clippy - Cross-Platform Clipboard Synchronization</TextBlock>
+    <!-- Device List -->
+    <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,10" Padding="5">
+      <Grid RowDefinitions="Auto,*">
+        <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5">Connected Devices:</TextBlock>
+        <ListBox Grid.Row="1" Name="DevicesList">
+          <ListBoxItem>No connected devices</ListBoxItem>
+        </ListBox>
+      </Grid>
+    </Border>
+    <!-- Clipboard History -->
+    <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="5">
+      <Grid RowDefinitions="Auto,*">
+        <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5">Clipboard History:</TextBlock>
+        <ListBox Grid.Row="1" Name="ClipboardList">
+          <ListBoxItem>No clipboard history yet</ListBoxItem>
+        </ListBox>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>
