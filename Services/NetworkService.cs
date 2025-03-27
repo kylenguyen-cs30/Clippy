@@ -44,13 +44,13 @@ namespace Clippy.Console.Services
                 ["content"] = content,
                 ["deviceName"] = Environment.MachineName,
                 ["deviceType"] = GetDeviceType(),
-                ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeMiliseconds().ToString(),
+                ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(),
             };
 
             string jsonData = JsonSerializer.Serialize(messageData);
             byte[] data = Encoding.UTF8.GetBytes(jsonData);
             byte[] messageBytes = MAGIC_BYTES.Concat(data).ToArray();
-            await _broadcaster.SendAsync(messasgeBytes, messageBytes.Length, new IPEndPoint(IPAddress.Broadcast, 5555));
+            await _broadcaster.SendAsync(messageBytes, messageBytes.Length, new IPEndPoint(IPAddress.Broadcast, 5555));
         }
 
         public string GetDeviceType()
@@ -87,7 +87,7 @@ namespace Clippy.Console.Services
                         continue;
                     }
 
-                    string senderIp = result.RemoteEndpoint.Address.ToString();
+                    string senderIp = result.RemoteEndPoint.Address.ToString();
                     string deviceName = messageData["deviceName"];
                     string deviceType = messageData["deviceType"];
                     string content = messageData["content"];

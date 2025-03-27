@@ -33,6 +33,7 @@ namespace Clippy.Console
             // wire up event handlers 
             _clipboardService.ClipboardChanged += OnClipboardChanged;
             _networkService.ClipboardDataReceived += OnClipboardDataRecieved;
+            _networkService.DeviceDiscovered += OnDeviceDiscovered;
 
             // statr services 
             _clipboardService.Start();
