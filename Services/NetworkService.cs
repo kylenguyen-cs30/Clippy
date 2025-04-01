@@ -61,6 +61,14 @@ namespace Clippy.Console.Services
 
         private async Task SendDirectMessage(string content)
         {
+
+            // Check if the content is actually small enough when serialized 
+            if (content.Length > 10000)
+            {
+                // if potentially too large, use chunking instead 
+                await SendChunkedMessage(content);
+                return;
+            }
             var messageData = new Dictionary<string, string>
             {
                 ["app"] = APP_IDENTIFIER,
@@ -73,6 +81,15 @@ namespace Clippy.Console.Services
 
             string jsonData = JsonSerializer.Serialize(messageData);
             byte[] data = Encoding.UTF8.GetBytes(jsonData);
+
+
+            // check final message size before sending 
+            if (data.Length + MAGIC_BYTES.Length > 60000)
+            {
+                // too big even with small content, use chunking instead 
+                await SendChunkedMessage(content);
+                return;
+            }
             byte[] messageBytes = MAGIC_BYTES.Concat(data).ToArray();
             await _broadcaster.SendAsync(messageBytes, messageBytes.Length, new IPEndPoint(IPAddress.Broadcast, 5555));
 
@@ -85,10 +102,12 @@ namespace Clippy.Console.Services
             byte[] contentBytes = Encoding.UTF8.GetBytes(content);
 
             // Determine chunk size - leave room for headers 
-            const int chunkSize = 50000;
+            const int chunkSize = 30000;
 
             // calculate number of chunks 
             int totalChunks = (int)Math.Ceiling(contentBytes.Length / (double)chunkSize);
+
+            System.Console.WriteLine($"Breaking content into {totalChunks} chunks");
 
             // send each chunk 
             for (int i = 0; i < totalChunks; i++)
@@ -110,10 +129,10 @@ namespace Clippy.Console.Services
                     ["deviceName"] = Environment.MachineName,
                     ["deviceType"] = GetDeviceType(),
                     ["isChunked"] = "true",
+                    ["chunkIndex"] = i.ToString(),
+                    ["chunkData"] = chunkBase64,
                     ["messageId"] = messageId,
                     ["chunkData"] = chunkBase64,
-                    ["deviceName"] = Environment.MachineName,
-                    ["deviceType"] = GetDeviceType(),
                     ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(),
                 };
 
@@ -121,14 +140,17 @@ namespace Clippy.Console.Services
                 byte[] data = Encoding.UTF8.GetBytes(jsonData);
                 byte[] messageBytes = MAGIC_BYTES.Concat(data).ToArray();
 
+                if (messageBytes.Length > 65000)
+                {
+                    System.Console.WriteLine($"Warning: Chunk {i} is still too large at {messageBytes.Length} bytes");
+                    continue; // skip this chunk rather than crashing
+                }
+
                 await _broadcaster.SendAsync(messageBytes, messageBytes.Length, new IPEndPoint(IPAddress.Broadcast, 5555));
 
 
                 // add a small delay between chunks to avoid network congestion
                 await Task.Delay(50);
-
-
-
             }
 
         }
@@ -150,22 +172,70 @@ namespace Clippy.Console.Services
 
         private void ProcessChunkedMesage(Dictionary<string, string> messageData, string senderIp, string deviceName, string deviceType)
         {
-            string messageId = messageData["messageId"];
-            int chunkIndex = int.Parse(messageData["chunkIndex"]);
-            int totalChunks = int.Parse(messageData["totalChunks"]);
-            string chunkData = messageData("chunkData");
-
-            // ensure we have a dictionary for this message 
-            if (!_messageChunks.ContainsKey(messageId))
+            try
             {
-                _messageChunks[messageId] = new Dictionary<int, string>();
+                string messageId = messageData["messageId"];
+                int chunkIndex = int.Parse(messageData["chunkIndex"]);
+                int totalChunks = int.Parse(messageData["totalChunks"]);
+                string chunkData = messageData["chunkData"];
+
+                System.Console.WriteLine($"Received Chunk {chunkIndex + 1} of {totalChunks} for message {messageId}");
+
+                // ensure we have a dictionary for this message 
+                if (!_messageChunks.ContainsKey(messageId))
+                {
+                    _messageChunks[messageId] = new Dictionary<int, string>();
+                }
+
+
+                // store this chunk 
+                _messageChunks[messageId][chunkIndex] = chunkData;
+
+
+                // check if we have all chunks 
+
+                if (_messageChunks[messageId].Count == totalChunks)
+                {
+                    System.Console.WriteLine($"All {totalChunks} chunks recieved for message {messageId}, reassembling");
+
+                    // we have all chunks, reassembling the message 
+                    StringBuilder contentBuilder = new StringBuilder();
+
+                    for (int i = 0; i < totalChunks; i++)
+                    {
+                        if (!_messageChunks[messageId].TryGetValue(i, out var base64Chunk))
+                        {
+                            System.Console.WriteLine($"Error: missing chunk {i} when assembling message {messageId}");
+                            return;
+                        }
+
+                        byte[] chunkBytes = Convert.FromBase64String(base64Chunk);
+                        string chunkText = Encoding.UTF8.GetString(chunkBytes);
+                        contentBuilder.Append(chunkText);
+                    }
+                    string completeContent = contentBuilder.ToString();
+
+                    // remove the assembled message from the dictionary 
+                    _messageChunks.Remove(messageId);
+
+                    // notify about new device 
+                    var device = new Device(deviceName, senderIp, deviceType);
+                    DeviceDiscovered?.Invoke(this, device);
+
+                    // notify about new  clipboard content 
+                    //
+                    var clipboardItem = new ClipboardItem(completeContent, deviceName, senderIp, deviceType);
+                    ClipboardDataReceived?.Invoke(this, clipboardItem);
+
+
+                }
+
             }
+            catch (Exception ex)
+            {
 
-
-            // store this chunk 
-            _messageChunks[messageId][chunkIndex] = chunkData;
-
-
+                System.Console.WriteLine($"Error in ProcessChunkedMesage: {ex.Message}");
+            }
         }
 
 
@@ -200,7 +270,7 @@ namespace Clippy.Console.Services
 
 
                     // checker whether if it is chunked message or not
-                    bool isChunked = messageData.ContainsKey("isChunked") && messageData["messageData"] == "true";
+                    bool isChunked = messageData.ContainsKey("isChunked") && messageData["isChunked"] == "true";
 
                     if (isChunked)
                     {

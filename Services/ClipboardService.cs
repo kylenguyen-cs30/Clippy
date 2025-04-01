@@ -35,6 +35,7 @@ namespace Clippy.Console.Services
                     string currentText = await TextCopy.ClipboardService.GetTextAsync();
                     if (currentText != null && currentText != _lastClipboardContent)
                     {
+                        System.Console.WriteLine($"Clipboard Changed, content length: {currentText?.Length ?? 0}");
                         _lastClipboardContent = currentText;
                         ClipboardChanged?.Invoke(this, currentText);
                     }
@@ -51,6 +52,7 @@ namespace Clippy.Console.Services
         {
             if (content != _lastClipboardContent)
             {
+                System.Console.WriteLine("New data detected");
                 _lastClipboardContent = content;
                 await TextCopy.ClipboardService.SetTextAsync(content);
 
