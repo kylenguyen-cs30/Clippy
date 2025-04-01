@@ -295,23 +295,6 @@ namespace Clippy.Console.Services
 
 
 
-
-
-
-
-
-
-                    // string content = messageData["content"];
-                    //
-                    // // notify about new device 
-                    // var device = new Device(deviceName, senderIp, deviceType);
-                    // DeviceDiscovered?.Invoke(this, device);
-                    //
-                    // // Notify about new clipboard content 
-                    // var clipboardItem = new ClipboardItem(content, deviceName, senderIp, deviceType);
-                    // ClipboardDataReceived?.Invoke(this, clipboardItem);
-
-
                 }
                 catch (Exception ex)
                 {
