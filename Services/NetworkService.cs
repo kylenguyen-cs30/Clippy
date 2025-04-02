@@ -50,7 +50,7 @@ namespace Clippy.Console.Services
             byte[] contentBytes = Encoding.UTF8.GetBytes(content);
 
             // Determine chunk size - leave room for headers 
-            const int chunkSize = 30000;
+            const int chunkSize = 8000;
 
             // calculate number of chunks 
             int totalChunks = (int)Math.Ceiling(contentBytes.Length / (double)chunkSize);
