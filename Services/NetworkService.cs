@@ -50,7 +50,7 @@ namespace Clippy.Console.Services
             byte[] contentBytes = Encoding.UTF8.GetBytes(content);
 
             // Determine chunk size - leave room for headers 
-            const int chunkSize = 4000;
+            const int chunkSize = 1000;
 
             // calculate number of chunks 
             int totalChunks = (int)Math.Ceiling(contentBytes.Length / (double)chunkSize);
@@ -72,16 +72,15 @@ namespace Clippy.Console.Services
 
                 var messageData = new Dictionary<string, string>
                 {
-                    ["app"] = APP_IDENTIFIER,
-                    // ["content"] = content,
-                    ["deviceName"] = Environment.MachineName,
-                    ["deviceType"] = GetDeviceType(),
-                    ["isChunked"] = "true",
-                    ["chunkIndex"] = i.ToString(),
-                    ["chunkData"] = chunkBase64,
-                    ["messageId"] = messageId,
-                    ["totalChunks"] = totalChunks.ToString(),
-                    ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(),
+                    ["a"] = APP_IDENTIFIER,
+                    ["n"] = Environment.MachineName,
+                    ["t"] = GetDeviceType(),
+                    ["c"] = "true",
+                    ["i"] = i.ToString(),
+                    ["d"] = chunkBase64,
+                    ["m"] = messageId,
+                    ["tc"] = totalChunks.ToString(),
+                    ["ts"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(),
                 };
 
                 string jsonData = JsonSerializer.Serialize(messageData);
@@ -91,7 +90,7 @@ namespace Clippy.Console.Services
 
                 try
                 {
-                    if (messageBytes.Length > 65000)
+                    if (messageBytes.Length > 1500)
                     {
                         System.Console.WriteLine($"Warning: Chunk {i} is still too large at {messageBytes.Length} bytes");
                         continue; // skip this chunk rather than crashing
@@ -138,10 +137,10 @@ namespace Clippy.Console.Services
         {
             try
             {
-                string messageId = messageData["messageId"];
-                int chunkIndex = int.Parse(messageData["chunkIndex"]);
-                int totalChunks = int.Parse(messageData["totalChunks"]);
-                string chunkData = messageData["chunkData"];
+                string messageId = messageData["m"];
+                int chunkIndex = int.Parse(messageData["i"]);
+                int totalChunks = int.Parse(messageData["tc"]);
+                string chunkData = messageData["d"];
 
                 System.Console.WriteLine($"Received Chunk {chunkIndex + 1} of {totalChunks} for message {messageId}");
 
@@ -237,7 +236,7 @@ namespace Clippy.Console.Services
 
 
                     // checker whether if it is chunked message or not
-                    bool isChunked = messageData.ContainsKey("isChunked") && messageData["isChunked"] == "true";
+                    bool isChunked = messageData.ContainsKey("c") && messageData["c"] == "true";
 
                     if (isChunked)
                     {
