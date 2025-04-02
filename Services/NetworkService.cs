@@ -109,6 +109,9 @@ namespace Clippy.Console.Services
                 {
 
                     System.Console.WriteLine($"Error sending chunks {i}: {ex.Message}");
+                    System.Console.WriteLine($"Chunk Size: {messageBytes.Length} bytes");
+                    System.Console.WriteLine($"JSON data size: {jsonData.Length} characters");
+
                 }
                 // add a small delay between chunks to avoid network congestion
                 await Task.Delay(50);
