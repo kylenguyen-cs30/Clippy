@@ -82,7 +82,7 @@ namespace Clippy.Console
 
         private async void OnClipboardDataReceived(object sender, ClipboardItem item)
         {
-            System.Console.WriteLine($"Clipboard data receieved : {item.Content.Substring(0, Math.Min(20, item.Content.Length))}...");
+            System.Console.WriteLine($"Clipboard data receieved : {item.Content.Substring(1, Math.Min(20, item.Content.Length))}...");
             // when receiving clipboard data from network 
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
@@ -113,12 +113,23 @@ namespace Clippy.Console
         private void AddClipboardItem(string content, string computerName, string ipAddress, string deviceType)
         {
             var item = new ClipboardItem(content, computerName, ipAddress, deviceType);
-            ClipboardItems.Insert(0, item); // add to the beginning of the list 
+
+            // Insert at the beginning (index 0) or at index 1 if the collect has items 
+            if (ClipboardItems.Count == 0)
+            {
+                ClipboardItems.Add(item);
+            }
+            else
+            {
+                ClipboardItems.Insert(0, item);
+            }
+
 
             // keep history limited to last 20 items 
             while (ClipboardItems.Count > 20)
             {
                 ClipboardItems.RemoveAt(ClipboardItems.Count - 1);
+
             }
         }
 
