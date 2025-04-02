@@ -82,7 +82,11 @@ namespace Clippy.Console
 
         private async void OnClipboardDataReceived(object sender, ClipboardItem item)
         {
-            System.Console.WriteLine($"Clipboard data receieved : {item.Content.Substring(1, Math.Min(20, item.Content.Length))}...");
+            // System.Console.WriteLine($"Clipboard data receieved : {item.Content.Substring(1, Math.Min(20, item.Content.Length))}...");
+            string previewContent = item.Content.Length > 0 ? item.Content.Substring(0, Math.Min(20, item.Content.Length)) : "(empty)";
+
+            System.Console.WriteLine($"Clipboard data receieved : {previewContent}...");
+
             // when receiving clipboard data from network 
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
