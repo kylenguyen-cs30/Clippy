@@ -73,7 +73,7 @@ namespace Clippy.Console.Services
                 var messageData = new Dictionary<string, string>
                 {
                     ["app"] = APP_IDENTIFIER,
-                    ["content"] = content,
+                    // ["content"] = content,
                     ["deviceName"] = Environment.MachineName,
                     ["deviceType"] = GetDeviceType(),
                     ["isChunked"] = "true",
