@@ -96,8 +96,13 @@ namespace Clippy.Console.Services
                         System.Console.WriteLine($"Warning: Chunk {i} is still too large at {messageBytes.Length} bytes");
                         continue; // skip this chunk rather than crashing
                     }
+                    // this is an issue for broadcasting 
+                    // await _broadcaster.SendAsync(messageBytes, messageBytes.Length, new IPEndPoint(IPAddress.Any, 5555));
 
-                    await _broadcaster.SendAsync(messageBytes, messageBytes.Length, new IPEndPoint(IPAddress.Any, 5555));
+                    await _broadcaster.SendAsync(messageBytes, messageBytes.Length, new IPEndPoint(IPAddress.Broadcast, 5555));
+
+
+
                     System.Console.WriteLine($"Sent chunk {i + 1} of {totalChunks}");
                 }
                 catch (Exception ex)
@@ -202,6 +207,9 @@ namespace Clippy.Console.Services
                 try
                 {
                     UdpReceiveResult result = await _receiver.ReceiveAsync();
+
+                    System.Console.WriteLine($"Starting to list for clipboard updates on  {_receiver.Client.LocalEndPoint}");
+                    System.Console.WriteLine($"Received data from {result.RemoteEndPoint}");
 
                     //  checker if the data is successfully receieving or not 
                     if (result.Buffer.Length <= MAGIC_BYTES.Length || !result.Buffer.Take(MAGIC_BYTES.Length).SequenceEqual(MAGIC_BYTES))
