@@ -16,7 +16,6 @@ namespace Clippy.Console.Services
         public void Start()
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            // Task.Run(() => MonitorClipboardAsync(() => MonitorClipboardAsync(_cancellationTokenSource.Token)));
             Task.Run(() => MonitorClipboardAsync(_cancellationTokenSource.Token));
         }
 
