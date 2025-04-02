@@ -7,9 +7,6 @@
       <Grid RowDefinitions="Auto,*">
         <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5">Connected Device</TextBlock>
         <ListBox Grid.Row="1" Name="DeviceList">
-          <ListBox.Items>
-            <Binding Path="Devices" />
-          </ListBox.Items>
           <ListBox.ItemTemplate>
             <DataTemplate>
               <StackPanel Orientation="Horizontal">
@@ -30,9 +27,6 @@
       <Grid RowDefinitions="Auto,*">
         <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5">Clipboard History:</TextBlock>
         <ListBox Grid.Row="1" Name="ClipboardList">
-          <ListBox.Items>
-            <Binding Path="ClipboardItems" />
-          </ListBox.Items>
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid RowDefinitions="Auto,Auto">
